@@ -78,6 +78,7 @@ def serhii_s_b6b528a1_dowto_reverse_srt(string)
   end
   # 4) возвращаем ту же кодировку, что у исходной
   output.force_encoding(string.encoding)
+  # 5. Restore the encoding of the original string
 end
 
 
