@@ -22,7 +22,7 @@ end
 
 def serhii_s_b6b528a1_reverse_str(string)
   output = string.dup.clear
-  #output = ''
+  # output = ''
   index  = string.length - 1
   while index >= 0
     output << string[index]
@@ -46,15 +46,48 @@ def shilpa_parate_084a08138_reverse_str(string)
   string.chars.each { |char| reverse = char + reverse }
   reverse
 end
+
+def serhii_s_b6b528a1_while_reverse_str(string)
+ len    = string.bytesize
+  # 2. Сразу выделяем буфер нужного размера (нулевая строка в бинарном виде)
+  output = "\0".b * len
+  # 3. Два счётчика: i идёт с конца input, j — с начала output
+  i = len - 1
+  j = 0
+
+  # 4. Цикл без вызовов Ruby-методов внутри:
+  while i >= 0
+    # getbyte/setbyte — чистые C-методы, они не аллоцируют и не конвертируют
+    output.setbyte(j, string.getbyte(i))
+    i -= 1
+    j += 1
+  end
+
+  # 5. Восстанавливаем кодировку исходной строки
+  output.force_encoding(string.encoding)
+end
+
+def serhii_s_b6b528a1_dowto_reverse_srt(string)
+  len    = string.bytesize
+  # 1) создаём строку ровно нужной длины, заполняя нулями
+  output = "\0".b * len
+  # 2) C-цикл Fixnum#downto для перебора индексов
+  (len - 1).downto(0) do |i|
+    # 3) getbyte/setbyte — чистый C, без аллокаций
+    output.setbyte(len - 1 - i, string.getbyte(i))
+  end
+  # 4) возвращаем ту же кодировку, что у исходной
+  output.force_encoding(string.encoding)
+end
+
+
 # ─────────────────────────────────────────────────────────
 
 IMPLEMENTATIONS = %i[
   fernando_melo_cunha_reverse_str
-  berfy_kunsangabo_web_reverse_str
   serhii_s_b6b528a1_reverse_str
-  jess_alejo_prepend_reverse_str
-  jess_alejo_reduce_reverse_str
-  shilpa_parate_084a08138_reverse_str
+  serhii_s_b6b528a1_dowto_reverse_srt
+  serhii_s_b6b528a1_while_reverse_str
 ].freeze
 
 STRINGS = {
