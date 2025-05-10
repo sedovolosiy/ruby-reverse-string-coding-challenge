@@ -80,6 +80,9 @@ def serhii_s_b6b528a1_dowto_reverse_srt(string)
   output.force_encoding(string.encoding)
 end
 
+def serhii_s_b6b528a1_orig_reverse_srt(string)
+  string.reverse
+end
 
 # ─────────────────────────────────────────────────────────
 
@@ -88,6 +91,7 @@ IMPLEMENTATIONS = %i[
   serhii_s_b6b528a1_reverse_str
   serhii_s_b6b528a1_dowto_reverse_srt
   serhii_s_b6b528a1_while_reverse_str
+  serhii_s_b6b528a1_orig_reverse_srt
 ].freeze
 
 STRINGS = {
