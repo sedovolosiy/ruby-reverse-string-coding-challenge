@@ -49,36 +49,35 @@ end
 
 def serhii_s_b6b528a1_while_reverse_str(string)
  len    = string.bytesize
-  # 2. Сразу выделяем буфер нужного размера (нулевая строка в бинарном виде)
+  # 2. Immediately allocate a buffer of the required size (zero string in binary form)
   output = "\0".b * len
-  # 3. Два счётчика: i идёт с конца input, j — с начала output
+  # 3. Two counters: i goes from the end of input, j — from the beginning of output
   i = len - 1
   j = 0
 
-  # 4. Цикл без вызовов Ruby-методов внутри:
+  # 4. Loop without Ruby method calls inside:
   while i >= 0
-    # getbyte/setbyte — чистые C-методы, они не аллоцируют и не конвертируют
+    # getbyte/setbyte — pure C methods, no allocations or conversions
     output.setbyte(j, string.getbyte(i))
     i -= 1
     j += 1
   end
 
-  # 5. Восстанавливаем кодировку исходной строки
+  # 5. Restore the encoding of the original string
   output.force_encoding(string.encoding)
 end
 
 def serhii_s_b6b528a1_dowto_reverse_srt(string)
   len    = string.bytesize
-  # 1) создаём строку ровно нужной длины, заполняя нулями
+  # 1) Create a string of the exact required length, filled with zeros
   output = "\0".b * len
-  # 2) C-цикл Fixnum#downto для перебора индексов
+  # 2) C-loop Fixnum#downto to iterate over indices
   (len - 1).downto(0) do |i|
-    # 3) getbyte/setbyte — чистый C, без аллокаций
+    # 3) getbyte/setbyte — pure C, no allocations
     output.setbyte(len - 1 - i, string.getbyte(i))
   end
-  # 4) возвращаем ту же кодировку, что у исходной
+  # 4) Restore the encoding of the original string
   output.force_encoding(string.encoding)
-  # 5. Restore the encoding of the original string
 end
 
 
