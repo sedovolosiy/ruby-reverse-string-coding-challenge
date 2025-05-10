@@ -22,6 +22,7 @@ end
 
 def serhii_s_b6b528a1_reverse_str(string)
   output = string.dup.clear
+  #output = ''
   index  = string.length - 1
   while index >= 0
     output << string[index]
@@ -59,7 +60,10 @@ IMPLEMENTATIONS = %i[
 STRINGS = {
   short:  'a' * 10,
   medium: 'a' * 1_000,
-  long:   'a' * 1_000_000
+  long:   'a' * 1_000_000,
+  # Adding a test case with string.dup.clear to preserve encoding
+  encoding_test: "Hello 🌍".encode("UTF-8"),
+  windows_1251_test: "Hello world".encode("Windows-1251") # New test case
 }.freeze
 
 results = {}
@@ -69,9 +73,12 @@ STRINGS.each do |size, str|
   results[size] = IMPLEMENTATIONS.map do |name|
     fn  = method(name)
     res = begin
-            Benchmark.measure { fn.call(str) }
+            # Store both benchmark and the actual reversed string
+            reversed_str_result = nil
+            benchmark_result = Benchmark.measure { reversed_str_result = fn.call(str) }
+            { benchmark: benchmark_result, output: reversed_str_result }
           rescue SystemStackError, StandardError => e
-            e
+            { error: e }
           end
     [name, res]
   end
@@ -80,14 +87,26 @@ end
 
 # ──────────────── output by speed ────────────────
 results.each do |size, data|
-  puts "\n#{size.capitalize} (#{STRINGS[size].bytesize} bytes)"
+  puts "\n#{size.capitalize} (#{STRINGS[size].bytesize} bytes, encoding: #{STRINGS[size].encoding})" # Added encoding info
   data
-    .sort_by { |_, r| r.is_a?(Benchmark::Tms) ? r.real : Float::INFINITY }
-    .each do |name, r|
-      if r.is_a?(Benchmark::Tms)
-        puts "%-35s %.6f s" % [name, r.real]
+    .sort_by do |_, r_data|
+      if r_data.key?(:benchmark)
+        r_data[:benchmark].real
       else
-        puts "%-35s %s"     % [name, r.message]
+        Float::INFINITY
+      end
+    end
+    .each do |name, r_data|
+      if r_data.key?(:benchmark)
+        puts "%-35s %.6f s" % [name, r_data[:benchmark].real]
+        if [:encoding_test, :windows_1251_test].include?(size) # Check for both encoding tests
+          # Ensure the output string is also in UTF-8 for printing
+          puts "    Input Encoding: #{STRINGS[size].encoding}, Output Encoding: #{r_data[:output].encoding}"
+          output_str = r_data[:output].encode("UTF-8", invalid: :replace, undef: :replace, replace: '?')
+          puts "    Output (as UTF-8): #{output_str}"
+        end
+      else
+        puts "%-35s %s"     % [name, r_data[:error].message]
       end
     end
 end
